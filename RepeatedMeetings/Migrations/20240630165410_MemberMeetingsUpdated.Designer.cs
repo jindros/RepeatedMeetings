@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepeatedMeetings.Models;
 
@@ -11,9 +12,11 @@ using RepeatedMeetings.Models;
 namespace RepeatedMeetings.Migrations
 {
     [DbContext(typeof(RepeatedMeetingsDBContext))]
-    partial class RepeatedMeetingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240630165410_MemberMeetingsUpdated")]
+    partial class MemberMeetingsUpdated
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace RepeatedMeetings.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("MeetingMember", b =>
+                {
+                    b.Property<int>("MeetingsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MembersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MeetingsId", "MembersId");
+
+                    b.HasIndex("MembersId");
+
+                    b.ToTable("MeetingMember");
+                });
 
             modelBuilder.Entity("RepeatedMeetings.Models.Meeting", b =>
                 {
@@ -79,13 +97,13 @@ namespace RepeatedMeetings.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MeetingId")
+                    b.Property<int?>("MeetingId")
                         .HasColumnType("int");
 
                     b.Property<int>("MeetingsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("MemberId")
+                    b.Property<int?>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<int>("MembersId")
@@ -100,23 +118,40 @@ namespace RepeatedMeetings.Migrations
                     b.ToTable("MemberMeetings");
                 });
 
+            modelBuilder.Entity("MeetingMember", b =>
+                {
+                    b.HasOne("RepeatedMeetings.Models.Meeting", null)
+                        .WithMany()
+                        .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepeatedMeetings.Models.Member", null)
+                        .WithMany()
+                        .HasForeignKey("MembersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RepeatedMeetings.Models.MemberMeeting", b =>
                 {
-                    b.HasOne("RepeatedMeetings.Models.Meeting", "Meeting")
-                        .WithMany()
-                        .HasForeignKey("MeetingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("RepeatedMeetings.Models.Meeting", null)
+                        .WithMany("MemberMeetings")
+                        .HasForeignKey("MeetingId");
 
-                    b.HasOne("RepeatedMeetings.Models.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("RepeatedMeetings.Models.Member", null)
+                        .WithMany("MemberMeetings")
+                        .HasForeignKey("MemberId");
+                });
 
-                    b.Navigation("Meeting");
+            modelBuilder.Entity("RepeatedMeetings.Models.Meeting", b =>
+                {
+                    b.Navigation("MemberMeetings");
+                });
 
-                    b.Navigation("Member");
+            modelBuilder.Entity("RepeatedMeetings.Models.Member", b =>
+                {
+                    b.Navigation("MemberMeetings");
                 });
 #pragma warning restore 612, 618
         }

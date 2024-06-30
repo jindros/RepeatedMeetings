@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepeatedMeetings.Models;
 
@@ -11,9 +12,11 @@ using RepeatedMeetings.Models;
 namespace RepeatedMeetings.Migrations
 {
     [DbContext(typeof(RepeatedMeetingsDBContext))]
-    partial class RepeatedMeetingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240630172011_MemberMeetingsNewNew")]
+    partial class MemberMeetingsNewNew
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

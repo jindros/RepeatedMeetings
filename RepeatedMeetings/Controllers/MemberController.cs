@@ -35,6 +35,8 @@ namespace RepeatedMeetings.Controllers
             return Ok(member);
         }
 
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMember(int id)
         {

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RepeatedMeetings.Models;
 
@@ -11,9 +12,11 @@ using RepeatedMeetings.Models;
 namespace RepeatedMeetings.Migrations
 {
     [DbContext(typeof(RepeatedMeetingsDBContext))]
-    partial class RepeatedMeetingsDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240630091710_Meeting")]
+    partial class Meeting
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace RepeatedMeetings.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("MeetingMember", b =>
+                {
+                    b.Property<int>("MeetingsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MembersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MeetingsId", "MembersId");
+
+                    b.HasIndex("MembersId");
+
+                    b.ToTable("MeetingMember");
+                });
 
             modelBuilder.Entity("RepeatedMeetings.Models.Meeting", b =>
                 {
@@ -79,44 +97,69 @@ namespace RepeatedMeetings.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("MeetingId")
-                        .HasColumnType("int");
-
                     b.Property<int>("MeetingsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MemberId")
                         .HasColumnType("int");
 
                     b.Property<int>("MembersId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("MeetingId");
+                    b.HasIndex("PostId");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("TagId");
 
-                    b.ToTable("MemberMeetings");
+                    b.ToTable("MemberMeets");
+                });
+
+            modelBuilder.Entity("MeetingMember", b =>
+                {
+                    b.HasOne("RepeatedMeetings.Models.Meeting", null)
+                        .WithMany()
+                        .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RepeatedMeetings.Models.Member", null)
+                        .WithMany()
+                        .HasForeignKey("MembersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RepeatedMeetings.Models.MemberMeeting", b =>
                 {
-                    b.HasOne("RepeatedMeetings.Models.Meeting", "Meeting")
-                        .WithMany()
-                        .HasForeignKey("MeetingId")
+                    b.HasOne("RepeatedMeetings.Models.Member", "Post")
+                        .WithMany("MemberMeetings")
+                        .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RepeatedMeetings.Models.Member", "Member")
-                        .WithMany()
-                        .HasForeignKey("MemberId")
+                    b.HasOne("RepeatedMeetings.Models.Meeting", "Tag")
+                        .WithMany("MemberMeetings")
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Meeting");
+                    b.Navigation("Post");
 
-                    b.Navigation("Member");
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("RepeatedMeetings.Models.Meeting", b =>
+                {
+                    b.Navigation("MemberMeetings");
+                });
+
+            modelBuilder.Entity("RepeatedMeetings.Models.Member", b =>
+                {
+                    b.Navigation("MemberMeetings");
                 });
 #pragma warning restore 612, 618
         }
